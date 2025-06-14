@@ -1,0 +1,1330 @@
+Grammar
+
+    0 $accept: program $end
+
+    1 $@1: ε
+
+    2 program: PROGRAM IDENTIFIER $@1 program_body
+
+    3 program_body: BEGIN_ declaration_list statement_list END
+
+    4 declaration_list: ε
+    5                 | declaration_list declaration
+
+    6 declaration: DECLARE identifier_list AS type_spec SEMICOLON
+
+    7 identifier_list: array_identifier
+    8                | identifier_list COMMA array_identifier
+
+    9 array_identifier: IDENTIFIER
+   10                 | IDENTIFIER LBRACKET INTEGER_LITERAL RBRACKET
+
+   11 type_spec: INTEGER_TYPE
+   12          | FLOAT_TYPE
+
+   13 statement_list: ε
+   14               | statement_list statement
+
+   15 statement: assignment_statement
+   16          | for_statement
+   17          | if_statement
+   18          | print_statement
+
+   19 assignment_statement: IDENTIFIER ASSIGN expression SEMICOLON
+   20                     | IDENTIFIER LBRACKET expression RBRACKET ASSIGN expression SEMICOLON
+
+   21 for_statement: FOR LPAREN IDENTIFIER ASSIGN expression TO expression RPAREN statement_list ENDFOR
+   22              | FOR LPAREN IDENTIFIER ASSIGN expression DOWNTO expression RPAREN statement_list ENDFOR
+
+   23 if_statement: IF LPAREN condition RPAREN THEN statement_list ENDIF
+   24             | IF LPAREN condition RPAREN THEN statement_list ELSE statement_list ENDIF
+
+   25 condition: expression GE expression
+   26          | expression LE expression
+   27          | expression GT expression
+   28          | expression LT expression
+   29          | expression EQ expression
+   30          | expression NE expression
+
+   31 print_statement: PRINT LPAREN expression RPAREN SEMICOLON
+   32                | PRINT LPAREN expression COMMA expression RPAREN SEMICOLON
+
+   33 expression: INTEGER_LITERAL
+   34           | FLOAT_LITERAL
+   35           | IDENTIFIER
+   36           | IDENTIFIER LBRACKET expression RBRACKET
+   37           | expression PLUS expression
+   38           | expression MINUS expression
+   39           | expression MULTIPLY expression
+   40           | expression DIVIDE expression
+   41           | MINUS expression
+   42           | LPAREN expression RPAREN
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    IDENTIFIER <strval> (258) 2 9 10 19 20 21 22 35 36
+    INTEGER_LITERAL <intval> (259) 10 33
+    FLOAT_LITERAL <floatval> (260) 34
+    PROGRAM (261) 2
+    BEGIN_ (262) 3
+    END (263) 3
+    DECLARE (264) 6
+    AS (265) 6
+    INTEGER_TYPE (266) 11
+    FLOAT_TYPE (267) 12
+    FOR (268) 21 22
+    TO (269) 21
+    DOWNTO (270) 22
+    ENDFOR (271) 21 22
+    IF (272) 23 24
+    THEN (273) 23 24
+    ELSE (274) 24
+    ENDIF (275) 23 24
+    PRINT (276) 31 32
+    ASSIGN (277) 19 20 21 22
+    SEMICOLON (278) 6 19 20 31 32
+    COMMA (279) 8 32
+    LPAREN (280) 21 22 23 24 31 32 42
+    RPAREN (281) 21 22 23 24 31 32 42
+    LBRACKET (282) 10 20 36
+    RBRACKET (283) 10 20 36
+    PLUS (284) 37
+    MINUS (285) 38 41
+    MULTIPLY (286) 39
+    DIVIDE (287) 40
+    GE (288) 25
+    LE (289) 26
+    GT (290) 27
+    LT (291) 28
+    EQ (292) 29
+    NE (293) 30
+    UMINUS (294)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (40)
+        on left: 0
+    program (41)
+        on left: 2
+        on right: 0
+    $@1 (42)
+        on left: 1
+        on right: 2
+    program_body (43)
+        on left: 3
+        on right: 2
+    declaration_list (44)
+        on left: 4 5
+        on right: 3 5
+    declaration (45)
+        on left: 6
+        on right: 5
+    identifier_list <id_attr> (46)
+        on left: 7 8
+        on right: 6 8
+    array_identifier <id_attr> (47)
+        on left: 9 10
+        on right: 7 8
+    type_spec <strval> (48)
+        on left: 11 12
+        on right: 6
+    statement_list (49)
+        on left: 13 14
+        on right: 3 14 21 22 23 24
+    statement (50)
+        on left: 15 16 17 18
+        on right: 14
+    assignment_statement (51)
+        on left: 19 20
+        on right: 15
+    for_statement (52)
+        on left: 21 22
+        on right: 16
+    if_statement (53)
+        on left: 23 24
+        on right: 17
+    condition (54)
+        on left: 25 26 27 28 29 30
+        on right: 23 24
+    print_statement (55)
+        on left: 31 32
+        on right: 18
+    expression <expr> (56)
+        on left: 33 34 35 36 37 38 39 40 41 42
+        on right: 19 20 21 22 25 26 27 28 29 30 31 32 36 37 38 39 40 41 42
+
+
+State 0
+
+    0 $accept: • program $end
+
+    PROGRAM  shift, and go to state 1
+
+    program  go to state 2
+
+
+State 1
+
+    2 program: PROGRAM • IDENTIFIER $@1 program_body
+
+    IDENTIFIER  shift, and go to state 3
+
+
+State 2
+
+    0 $accept: program • $end
+
+    $end  shift, and go to state 4
+
+
+State 3
+
+    2 program: PROGRAM IDENTIFIER • $@1 program_body
+
+    $default  reduce using rule 1 ($@1)
+
+    $@1  go to state 5
+
+
+State 4
+
+    0 $accept: program $end •
+
+    $default  accept
+
+
+State 5
+
+    2 program: PROGRAM IDENTIFIER $@1 • program_body
+
+    BEGIN_  shift, and go to state 6
+
+    program_body  go to state 7
+
+
+State 6
+
+    3 program_body: BEGIN_ • declaration_list statement_list END
+
+    $default  reduce using rule 4 (declaration_list)
+
+    declaration_list  go to state 8
+
+
+State 7
+
+    2 program: PROGRAM IDENTIFIER $@1 program_body •
+
+    $default  reduce using rule 2 (program)
+
+
+State 8
+
+    3 program_body: BEGIN_ declaration_list • statement_list END
+    5 declaration_list: declaration_list • declaration
+
+    DECLARE  shift, and go to state 9
+
+    $default  reduce using rule 13 (statement_list)
+
+    declaration     go to state 10
+    statement_list  go to state 11
+
+
+State 9
+
+    6 declaration: DECLARE • identifier_list AS type_spec SEMICOLON
+
+    IDENTIFIER  shift, and go to state 12
+
+    identifier_list   go to state 13
+    array_identifier  go to state 14
+
+
+State 10
+
+    5 declaration_list: declaration_list declaration •
+
+    $default  reduce using rule 5 (declaration_list)
+
+
+State 11
+
+    3 program_body: BEGIN_ declaration_list statement_list • END
+   14 statement_list: statement_list • statement
+
+    IDENTIFIER  shift, and go to state 15
+    END         shift, and go to state 16
+    FOR         shift, and go to state 17
+    IF          shift, and go to state 18
+    PRINT       shift, and go to state 19
+
+    statement             go to state 20
+    assignment_statement  go to state 21
+    for_statement         go to state 22
+    if_statement          go to state 23
+    print_statement       go to state 24
+
+
+State 12
+
+    9 array_identifier: IDENTIFIER •
+   10                 | IDENTIFIER • LBRACKET INTEGER_LITERAL RBRACKET
+
+    LBRACKET  shift, and go to state 25
+
+    $default  reduce using rule 9 (array_identifier)
+
+
+State 13
+
+    6 declaration: DECLARE identifier_list • AS type_spec SEMICOLON
+    8 identifier_list: identifier_list • COMMA array_identifier
+
+    AS     shift, and go to state 26
+    COMMA  shift, and go to state 27
+
+
+State 14
+
+    7 identifier_list: array_identifier •
+
+    $default  reduce using rule 7 (identifier_list)
+
+
+State 15
+
+   19 assignment_statement: IDENTIFIER • ASSIGN expression SEMICOLON
+   20                     | IDENTIFIER • LBRACKET expression RBRACKET ASSIGN expression SEMICOLON
+
+    ASSIGN    shift, and go to state 28
+    LBRACKET  shift, and go to state 29
+
+
+State 16
+
+    3 program_body: BEGIN_ declaration_list statement_list END •
+
+    $default  reduce using rule 3 (program_body)
+
+
+State 17
+
+   21 for_statement: FOR • LPAREN IDENTIFIER ASSIGN expression TO expression RPAREN statement_list ENDFOR
+   22              | FOR • LPAREN IDENTIFIER ASSIGN expression DOWNTO expression RPAREN statement_list ENDFOR
+
+    LPAREN  shift, and go to state 30
+
+
+State 18
+
+   23 if_statement: IF • LPAREN condition RPAREN THEN statement_list ENDIF
+   24             | IF • LPAREN condition RPAREN THEN statement_list ELSE statement_list ENDIF
+
+    LPAREN  shift, and go to state 31
+
+
+State 19
+
+   31 print_statement: PRINT • LPAREN expression RPAREN SEMICOLON
+   32                | PRINT • LPAREN expression COMMA expression RPAREN SEMICOLON
+
+    LPAREN  shift, and go to state 32
+
+
+State 20
+
+   14 statement_list: statement_list statement •
+
+    $default  reduce using rule 14 (statement_list)
+
+
+State 21
+
+   15 statement: assignment_statement •
+
+    $default  reduce using rule 15 (statement)
+
+
+State 22
+
+   16 statement: for_statement •
+
+    $default  reduce using rule 16 (statement)
+
+
+State 23
+
+   17 statement: if_statement •
+
+    $default  reduce using rule 17 (statement)
+
+
+State 24
+
+   18 statement: print_statement •
+
+    $default  reduce using rule 18 (statement)
+
+
+State 25
+
+   10 array_identifier: IDENTIFIER LBRACKET • INTEGER_LITERAL RBRACKET
+
+    INTEGER_LITERAL  shift, and go to state 33
+
+
+State 26
+
+    6 declaration: DECLARE identifier_list AS • type_spec SEMICOLON
+
+    INTEGER_TYPE  shift, and go to state 34
+    FLOAT_TYPE    shift, and go to state 35
+
+    type_spec  go to state 36
+
+
+State 27
+
+    8 identifier_list: identifier_list COMMA • array_identifier
+
+    IDENTIFIER  shift, and go to state 12
+
+    array_identifier  go to state 37
+
+
+State 28
+
+   19 assignment_statement: IDENTIFIER ASSIGN • expression SEMICOLON
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 43
+
+
+State 29
+
+   20 assignment_statement: IDENTIFIER LBRACKET • expression RBRACKET ASSIGN expression SEMICOLON
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 44
+
+
+State 30
+
+   21 for_statement: FOR LPAREN • IDENTIFIER ASSIGN expression TO expression RPAREN statement_list ENDFOR
+   22              | FOR LPAREN • IDENTIFIER ASSIGN expression DOWNTO expression RPAREN statement_list ENDFOR
+
+    IDENTIFIER  shift, and go to state 45
+
+
+State 31
+
+   23 if_statement: IF LPAREN • condition RPAREN THEN statement_list ENDIF
+   24             | IF LPAREN • condition RPAREN THEN statement_list ELSE statement_list ENDIF
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    condition   go to state 46
+    expression  go to state 47
+
+
+State 32
+
+   31 print_statement: PRINT LPAREN • expression RPAREN SEMICOLON
+   32                | PRINT LPAREN • expression COMMA expression RPAREN SEMICOLON
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 48
+
+
+State 33
+
+   10 array_identifier: IDENTIFIER LBRACKET INTEGER_LITERAL • RBRACKET
+
+    RBRACKET  shift, and go to state 49
+
+
+State 34
+
+   11 type_spec: INTEGER_TYPE •
+
+    $default  reduce using rule 11 (type_spec)
+
+
+State 35
+
+   12 type_spec: FLOAT_TYPE •
+
+    $default  reduce using rule 12 (type_spec)
+
+
+State 36
+
+    6 declaration: DECLARE identifier_list AS type_spec • SEMICOLON
+
+    SEMICOLON  shift, and go to state 50
+
+
+State 37
+
+    8 identifier_list: identifier_list COMMA array_identifier •
+
+    $default  reduce using rule 8 (identifier_list)
+
+
+State 38
+
+   35 expression: IDENTIFIER •
+   36           | IDENTIFIER • LBRACKET expression RBRACKET
+
+    LBRACKET  shift, and go to state 51
+
+    $default  reduce using rule 35 (expression)
+
+
+State 39
+
+   33 expression: INTEGER_LITERAL •
+
+    $default  reduce using rule 33 (expression)
+
+
+State 40
+
+   34 expression: FLOAT_LITERAL •
+
+    $default  reduce using rule 34 (expression)
+
+
+State 41
+
+   42 expression: LPAREN • expression RPAREN
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 52
+
+
+State 42
+
+   41 expression: MINUS • expression
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 53
+
+
+State 43
+
+   19 assignment_statement: IDENTIFIER ASSIGN expression • SEMICOLON
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    SEMICOLON  shift, and go to state 54
+    PLUS       shift, and go to state 55
+    MINUS      shift, and go to state 56
+    MULTIPLY   shift, and go to state 57
+    DIVIDE     shift, and go to state 58
+
+
+State 44
+
+   20 assignment_statement: IDENTIFIER LBRACKET expression • RBRACKET ASSIGN expression SEMICOLON
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    RBRACKET  shift, and go to state 59
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+
+State 45
+
+   21 for_statement: FOR LPAREN IDENTIFIER • ASSIGN expression TO expression RPAREN statement_list ENDFOR
+   22              | FOR LPAREN IDENTIFIER • ASSIGN expression DOWNTO expression RPAREN statement_list ENDFOR
+
+    ASSIGN  shift, and go to state 60
+
+
+State 46
+
+   23 if_statement: IF LPAREN condition • RPAREN THEN statement_list ENDIF
+   24             | IF LPAREN condition • RPAREN THEN statement_list ELSE statement_list ENDIF
+
+    RPAREN  shift, and go to state 61
+
+
+State 47
+
+   25 condition: expression • GE expression
+   26          | expression • LE expression
+   27          | expression • GT expression
+   28          | expression • LT expression
+   29          | expression • EQ expression
+   30          | expression • NE expression
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+    GE        shift, and go to state 62
+    LE        shift, and go to state 63
+    GT        shift, and go to state 64
+    LT        shift, and go to state 65
+    EQ        shift, and go to state 66
+    NE        shift, and go to state 67
+
+
+State 48
+
+   31 print_statement: PRINT LPAREN expression • RPAREN SEMICOLON
+   32                | PRINT LPAREN expression • COMMA expression RPAREN SEMICOLON
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    COMMA     shift, and go to state 68
+    RPAREN    shift, and go to state 69
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+
+State 49
+
+   10 array_identifier: IDENTIFIER LBRACKET INTEGER_LITERAL RBRACKET •
+
+    $default  reduce using rule 10 (array_identifier)
+
+
+State 50
+
+    6 declaration: DECLARE identifier_list AS type_spec SEMICOLON •
+
+    $default  reduce using rule 6 (declaration)
+
+
+State 51
+
+   36 expression: IDENTIFIER LBRACKET • expression RBRACKET
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 70
+
+
+State 52
+
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+   42           | LPAREN expression • RPAREN
+
+    RPAREN    shift, and go to state 71
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+
+State 53
+
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+   41           | MINUS expression •
+
+    $default  reduce using rule 41 (expression)
+
+
+State 54
+
+   19 assignment_statement: IDENTIFIER ASSIGN expression SEMICOLON •
+
+    $default  reduce using rule 19 (assignment_statement)
+
+
+State 55
+
+   37 expression: expression PLUS • expression
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 72
+
+
+State 56
+
+   38 expression: expression MINUS • expression
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 73
+
+
+State 57
+
+   39 expression: expression MULTIPLY • expression
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 74
+
+
+State 58
+
+   40 expression: expression DIVIDE • expression
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 75
+
+
+State 59
+
+   20 assignment_statement: IDENTIFIER LBRACKET expression RBRACKET • ASSIGN expression SEMICOLON
+
+    ASSIGN  shift, and go to state 76
+
+
+State 60
+
+   21 for_statement: FOR LPAREN IDENTIFIER ASSIGN • expression TO expression RPAREN statement_list ENDFOR
+   22              | FOR LPAREN IDENTIFIER ASSIGN • expression DOWNTO expression RPAREN statement_list ENDFOR
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 77
+
+
+State 61
+
+   23 if_statement: IF LPAREN condition RPAREN • THEN statement_list ENDIF
+   24             | IF LPAREN condition RPAREN • THEN statement_list ELSE statement_list ENDIF
+
+    THEN  shift, and go to state 78
+
+
+State 62
+
+   25 condition: expression GE • expression
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 79
+
+
+State 63
+
+   26 condition: expression LE • expression
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 80
+
+
+State 64
+
+   27 condition: expression GT • expression
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 81
+
+
+State 65
+
+   28 condition: expression LT • expression
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 82
+
+
+State 66
+
+   29 condition: expression EQ • expression
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 83
+
+
+State 67
+
+   30 condition: expression NE • expression
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 84
+
+
+State 68
+
+   32 print_statement: PRINT LPAREN expression COMMA • expression RPAREN SEMICOLON
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 85
+
+
+State 69
+
+   31 print_statement: PRINT LPAREN expression RPAREN • SEMICOLON
+
+    SEMICOLON  shift, and go to state 86
+
+
+State 70
+
+   36 expression: IDENTIFIER LBRACKET expression • RBRACKET
+   37           | expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    RBRACKET  shift, and go to state 87
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+
+State 71
+
+   42 expression: LPAREN expression RPAREN •
+
+    $default  reduce using rule 42 (expression)
+
+
+State 72
+
+   37 expression: expression • PLUS expression
+   37           | expression PLUS expression •
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+    $default  reduce using rule 37 (expression)
+
+
+State 73
+
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   38           | expression MINUS expression •
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+    $default  reduce using rule 38 (expression)
+
+
+State 74
+
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   39           | expression MULTIPLY expression •
+   40           | expression • DIVIDE expression
+
+    $default  reduce using rule 39 (expression)
+
+
+State 75
+
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+   40           | expression DIVIDE expression •
+
+    $default  reduce using rule 40 (expression)
+
+
+State 76
+
+   20 assignment_statement: IDENTIFIER LBRACKET expression RBRACKET ASSIGN • expression SEMICOLON
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 88
+
+
+State 77
+
+   21 for_statement: FOR LPAREN IDENTIFIER ASSIGN expression • TO expression RPAREN statement_list ENDFOR
+   22              | FOR LPAREN IDENTIFIER ASSIGN expression • DOWNTO expression RPAREN statement_list ENDFOR
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    TO        shift, and go to state 89
+    DOWNTO    shift, and go to state 90
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+
+State 78
+
+   23 if_statement: IF LPAREN condition RPAREN THEN • statement_list ENDIF
+   24             | IF LPAREN condition RPAREN THEN • statement_list ELSE statement_list ENDIF
+
+    $default  reduce using rule 13 (statement_list)
+
+    statement_list  go to state 91
+
+
+State 79
+
+   25 condition: expression GE expression •
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+    $default  reduce using rule 25 (condition)
+
+
+State 80
+
+   26 condition: expression LE expression •
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+    $default  reduce using rule 26 (condition)
+
+
+State 81
+
+   27 condition: expression GT expression •
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+    $default  reduce using rule 27 (condition)
+
+
+State 82
+
+   28 condition: expression LT expression •
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+    $default  reduce using rule 28 (condition)
+
+
+State 83
+
+   29 condition: expression EQ expression •
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+    $default  reduce using rule 29 (condition)
+
+
+State 84
+
+   30 condition: expression NE expression •
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+    $default  reduce using rule 30 (condition)
+
+
+State 85
+
+   32 print_statement: PRINT LPAREN expression COMMA expression • RPAREN SEMICOLON
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    RPAREN    shift, and go to state 92
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+
+State 86
+
+   31 print_statement: PRINT LPAREN expression RPAREN SEMICOLON •
+
+    $default  reduce using rule 31 (print_statement)
+
+
+State 87
+
+   36 expression: IDENTIFIER LBRACKET expression RBRACKET •
+
+    $default  reduce using rule 36 (expression)
+
+
+State 88
+
+   20 assignment_statement: IDENTIFIER LBRACKET expression RBRACKET ASSIGN expression • SEMICOLON
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    SEMICOLON  shift, and go to state 93
+    PLUS       shift, and go to state 55
+    MINUS      shift, and go to state 56
+    MULTIPLY   shift, and go to state 57
+    DIVIDE     shift, and go to state 58
+
+
+State 89
+
+   21 for_statement: FOR LPAREN IDENTIFIER ASSIGN expression TO • expression RPAREN statement_list ENDFOR
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 94
+
+
+State 90
+
+   22 for_statement: FOR LPAREN IDENTIFIER ASSIGN expression DOWNTO • expression RPAREN statement_list ENDFOR
+
+    IDENTIFIER       shift, and go to state 38
+    INTEGER_LITERAL  shift, and go to state 39
+    FLOAT_LITERAL    shift, and go to state 40
+    LPAREN           shift, and go to state 41
+    MINUS            shift, and go to state 42
+
+    expression  go to state 95
+
+
+State 91
+
+   14 statement_list: statement_list • statement
+   23 if_statement: IF LPAREN condition RPAREN THEN statement_list • ENDIF
+   24             | IF LPAREN condition RPAREN THEN statement_list • ELSE statement_list ENDIF
+
+    IDENTIFIER  shift, and go to state 15
+    FOR         shift, and go to state 17
+    IF          shift, and go to state 18
+    ELSE        shift, and go to state 96
+    ENDIF       shift, and go to state 97
+    PRINT       shift, and go to state 19
+
+    statement             go to state 20
+    assignment_statement  go to state 21
+    for_statement         go to state 22
+    if_statement          go to state 23
+    print_statement       go to state 24
+
+
+State 92
+
+   32 print_statement: PRINT LPAREN expression COMMA expression RPAREN • SEMICOLON
+
+    SEMICOLON  shift, and go to state 98
+
+
+State 93
+
+   20 assignment_statement: IDENTIFIER LBRACKET expression RBRACKET ASSIGN expression SEMICOLON •
+
+    $default  reduce using rule 20 (assignment_statement)
+
+
+State 94
+
+   21 for_statement: FOR LPAREN IDENTIFIER ASSIGN expression TO expression • RPAREN statement_list ENDFOR
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    RPAREN    shift, and go to state 99
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+
+State 95
+
+   22 for_statement: FOR LPAREN IDENTIFIER ASSIGN expression DOWNTO expression • RPAREN statement_list ENDFOR
+   37 expression: expression • PLUS expression
+   38           | expression • MINUS expression
+   39           | expression • MULTIPLY expression
+   40           | expression • DIVIDE expression
+
+    RPAREN    shift, and go to state 100
+    PLUS      shift, and go to state 55
+    MINUS     shift, and go to state 56
+    MULTIPLY  shift, and go to state 57
+    DIVIDE    shift, and go to state 58
+
+
+State 96
+
+   24 if_statement: IF LPAREN condition RPAREN THEN statement_list ELSE • statement_list ENDIF
+
+    $default  reduce using rule 13 (statement_list)
+
+    statement_list  go to state 101
+
+
+State 97
+
+   23 if_statement: IF LPAREN condition RPAREN THEN statement_list ENDIF •
+
+    $default  reduce using rule 23 (if_statement)
+
+
+State 98
+
+   32 print_statement: PRINT LPAREN expression COMMA expression RPAREN SEMICOLON •
+
+    $default  reduce using rule 32 (print_statement)
+
+
+State 99
+
+   21 for_statement: FOR LPAREN IDENTIFIER ASSIGN expression TO expression RPAREN • statement_list ENDFOR
+
+    $default  reduce using rule 13 (statement_list)
+
+    statement_list  go to state 102
+
+
+State 100
+
+   22 for_statement: FOR LPAREN IDENTIFIER ASSIGN expression DOWNTO expression RPAREN • statement_list ENDFOR
+
+    $default  reduce using rule 13 (statement_list)
+
+    statement_list  go to state 103
+
+
+State 101
+
+   14 statement_list: statement_list • statement
+   24 if_statement: IF LPAREN condition RPAREN THEN statement_list ELSE statement_list • ENDIF
+
+    IDENTIFIER  shift, and go to state 15
+    FOR         shift, and go to state 17
+    IF          shift, and go to state 18
+    ENDIF       shift, and go to state 104
+    PRINT       shift, and go to state 19
+
+    statement             go to state 20
+    assignment_statement  go to state 21
+    for_statement         go to state 22
+    if_statement          go to state 23
+    print_statement       go to state 24
+
+
+State 102
+
+   14 statement_list: statement_list • statement
+   21 for_statement: FOR LPAREN IDENTIFIER ASSIGN expression TO expression RPAREN statement_list • ENDFOR
+
+    IDENTIFIER  shift, and go to state 15
+    FOR         shift, and go to state 17
+    ENDFOR      shift, and go to state 105
+    IF          shift, and go to state 18
+    PRINT       shift, and go to state 19
+
+    statement             go to state 20
+    assignment_statement  go to state 21
+    for_statement         go to state 22
+    if_statement          go to state 23
+    print_statement       go to state 24
+
+
+State 103
+
+   14 statement_list: statement_list • statement
+   22 for_statement: FOR LPAREN IDENTIFIER ASSIGN expression DOWNTO expression RPAREN statement_list • ENDFOR
+
+    IDENTIFIER  shift, and go to state 15
+    FOR         shift, and go to state 17
+    ENDFOR      shift, and go to state 106
+    IF          shift, and go to state 18
+    PRINT       shift, and go to state 19
+
+    statement             go to state 20
+    assignment_statement  go to state 21
+    for_statement         go to state 22
+    if_statement          go to state 23
+    print_statement       go to state 24
+
+
+State 104
+
+   24 if_statement: IF LPAREN condition RPAREN THEN statement_list ELSE statement_list ENDIF •
+
+    $default  reduce using rule 24 (if_statement)
+
+
+State 105
+
+   21 for_statement: FOR LPAREN IDENTIFIER ASSIGN expression TO expression RPAREN statement_list ENDFOR •
+
+    $default  reduce using rule 21 (for_statement)
+
+
+State 106
+
+   22 for_statement: FOR LPAREN IDENTIFIER ASSIGN expression DOWNTO expression RPAREN statement_list ENDFOR •
+
+    $default  reduce using rule 22 (for_statement)
