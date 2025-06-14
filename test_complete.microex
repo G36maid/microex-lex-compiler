@@ -1,0 +1,20 @@
+Program TestComplete
+Begin
+    declare I as integer;
+    declare A,B,C,D as float;
+    declare LLL[100] as float;
+
+    B := 2.0;
+    D := 4.0;
+    C := 1.0;
+
+    FOR (I := 1 TO 100)
+        A := -LLL[I] + B * D - C;
+    ENDFOR
+
+    IF (A >= 10000.0) THEN
+        print(A + 3.14);
+    ELSE
+        print(2.0, 1.4);
+    ENDIF
+End
