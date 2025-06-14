@@ -209,5 +209,5 @@ For bug reports and feature requests, please:
 
 ## Authors
 
-Your Name
-Contact: your.email@example.com
+G36maid
+miku65434@gmail.com
