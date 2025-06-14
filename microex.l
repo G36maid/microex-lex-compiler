@@ -6,10 +6,12 @@
 #include "y.tab.h"
 
 extern void yyerror(const char* s);
+int line_num = 1;
 %}
 
 %option nounput
 %option noinput
+%option yylineno
 
 letter      [A-Za-z]
 digit       [0-9]
@@ -54,28 +56,44 @@ floatnumber {digit}+"."{digit}+
 "=="            { return EQ; }
 "!="            { return NE; }
 
-{identifier}    { 
-                    yylval.strval = strdup(yytext); 
-                    return IDENTIFIER; 
+{identifier}    {
+                    if (strlen(yytext) > 50) {
+                        char msg[100];
+                        sprintf(msg, "Identifier too long at line %d (max 50 chars)", line_num);
+                        yyerror(msg);
+                    }
+                    yylval.strval = strdup(yytext);
+                    return IDENTIFIER;
                 }
 
-{integer}       { 
-                    yylval.intval = atoi(yytext); 
-                    return INTEGER_LITERAL; 
+{integer}       {
+                    yylval.intval = atoi(yytext);
+                    return INTEGER_LITERAL;
                 }
 
-{floatnumber}   { 
-                    yylval.floatval = atof(yytext); 
-                    return FLOAT_LITERAL; 
+{floatnumber}   {
+                    yylval.floatval = atof(yytext);
+                    return FLOAT_LITERAL;
                 }
 
 [ \t]+          { /* ignore whitespace */ }
-\n             { /* ignore newlines */ }
+\n              { line_num++; }
+"//".*          { /* ignore single line comments */ }
+"/*"([^*]|"*"+[^*/])*"*"+"/"  { /* ignore multi-line comments */ }
 
-.               { yyerror("Invalid character"); }
+.               {
+                    char msg[100];
+                    sprintf(msg, "Invalid character '%c' at line %d", yytext[0], line_num);
+                    yyerror(msg);
+                }
 
 %%
 
 int yywrap() {
     return 1;
+}
+
+void init_lexer() {
+    line_num = 1;
+    yylineno = 1;
 }

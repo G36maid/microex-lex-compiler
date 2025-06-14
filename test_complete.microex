@@ -1,20 +1,34 @@
 Program TestComplete
 Begin
-    declare I as integer;
-    declare A,B,C,D as float;
-    declare LLL[100] as float;
+    // Variable declarations
+    declare i, j, count as integer;
+    declare sum, avg, value as float;
+    declare data[100] as float;
 
-    B := 2.0;
-    D := 4.0;
-    C := 1.0;
+    // Initialize variables
+    sum := 0.0;
+    count := 100;
+    value := 1.5;
 
-    FOR (I := 1 TO 100)
-        A := -LLL[I] + B * D - C;
+    // Process array with FOR loop
+    FOR (i := 0 TO 99)
+        data[i] := value * i;
+        sum := sum + data[i];
     ENDFOR
 
-    IF (A >= 10000.0) THEN
-        print(A + 3.14);
+    // Calculate average
+    avg := sum / count;
+
+    // Nested IF statements
+    IF (avg >= 50.0) THEN
+        IF (sum >= 5000.0) THEN
+            print(sum, avg);
+        ELSE
+            print(avg);
+        ENDIF
     ELSE
-        print(2.0, 1.4);
+        FOR (j := 0 TO 9)
+            print(data[j]);
+        ENDFOR
     ENDIF
 End

@@ -1,14 +1,38 @@
 Program TestForLoops
 Begin
-    declare I as integer;
-    declare A,B,C,D as float;
-    declare LLL[100] as float;
+    // Counter variables
+    declare i, j, k as integer;
+    declare sum, product as float;
+    declare array[100] as float;
 
-    B := 2.0;
-    D := 4.0;
-    C := 1.0;
+    // Initialize variables
+    sum := 0.0;
+    product := 1.0;
 
-    FOR (I := 1 TO 100)
-        A := -LLL[I] + B * D - C;
+    // Basic counting up
+    FOR (i := 1 TO 10)
+        sum := sum + i;        // Sum numbers 1-10
+    ENDFOR
+
+    // Counting down
+    FOR (j := 10 DOWNTO 1)
+        product := product * j; // Calculate factorial
+    ENDFOR
+
+    // Array operations
+    FOR (k := 0 TO 99)
+        array[k] := k * 2.0;   // Fill array with even numbers
+    ENDFOR
+
+    // Nested loops
+    FOR (i := 0 TO 9)
+        FOR (j := 0 TO 9)
+            array[i * 10 + j] := i + j;  // Fill 2D pattern
+        ENDFOR
+    ENDFOR
+
+    // Loop with expressions
+    FOR (k := 50 DOWNTO 0)
+        array[k] := array[k] * sum / product;
     ENDFOR
 End

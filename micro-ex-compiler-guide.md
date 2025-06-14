@@ -1,342 +1,335 @@
-# Micro/Ex Compiler Implementation
+# Micro/Ex Compiler Technical Guide
 
-## Overview
+## Table of Contents
+1. [Language Specification](#language-specification)
+2. [Compiler Architecture](#compiler-architecture)
+3. [Three-Address Code Reference](#three-address-code-reference)
+4. [Symbol Table Management](#symbol-table-management)
+5. [Error Handling](#error-handling)
+6. [Optimization](#optimization)
+7. [Development Guide](#development-guide)
 
-This is a complete implementation of a compiler for the Micro/Ex programming language using Lex and Yacc. The compiler translates Micro/Ex source code into three-address intermediate code suitable for execution on a three-address machine.
+## Language Specification
 
-## Features Implemented
+### Lexical Structure
 
-### Core Language Support (90 points)
-
-✅ **Variable Declarations (70 points)**
-- Integer and float variable declarations
-- Array declarations with size specification
-- Multiple variable declarations in single statement
-- Symbol table management with type checking
-
-✅ **Assignment Statements (80 points)**
-- Simple variable assignments
-- Array element assignments
-- Type-appropriate code generation (I_STORE/F_STORE)
-
-✅ **FOR Loop Constructs (85 points)**
-- FOR...TO loops with automatic increment
-- FOR...DOWNTO loops with automatic decrement
-- Proper loop label generation and jumps
-- Nested loop support
-
-✅ **IF-THEN-ELSE Statements (90 points)**
-- Conditional expressions with comparison operators (>=, <=, >, <, ==, !=)
-- IF-THEN constructs
-- IF-THEN-ELSE constructs
-- Proper label generation and conditional jumps
-
-### Additional Features
-
-- **Arithmetic Expressions**: Full support for +, -, *, / with proper precedence
-- **Unary Minus**: Support for negative expressions
-- **Array Indexing**: Access to array elements in expressions
-- **Print Statements**: Support for print with single or multiple parameters
-- **Symbol Table**: Complete symbol table with type checking and scope management
-- **Three-Address Code Generation**: Optimized intermediate code generation
-
-## File Structure
-
+#### Keywords
 ```
-├── microex.l                    # Lexical analyzer (Lex specification)
-├── microex.y                    # Parser and semantic analyzer (Yacc specification)
-├── Makefile                     # Build configuration
-├── build_and_test.sh           # Build and test script
-├── test_declarations.microex    # Test for 70-point level
-├── test_assignments.microex     # Test for 80-point level
-├── test_for_loops.microex       # Test for 85-point level
-├── test_complete.microex        # Test for 90-point level
-└── test_pdf_example.microex     # Original PDF example
+Program  Begin    End      declare  as       integer  float
+FOR      TO      DOWNTO   ENDFOR   IF       THEN     ELSE
+ENDIF    print
 ```
 
-## Compilation Instructions
-
-### Prerequisites
-- GCC compiler
-- Lex (or Flex) 
-- Yacc (or Bison)
-- Make utility
-
-### Building the Compiler
-
-1. **Automatic Build and Test**:
-   ```bash
-   chmod +x build_and_test.sh
-   ./build_and_test.sh
-   ```
-
-2. **Manual Build**:
-   ```bash
-   # Generate parser
-   yacc -d microex.y
-   
-   # Generate lexer
-   lex microex.l
-   
-   # Compile
-   gcc -g -Wall -o microex lex.yy.c y.tab.c -ly -ll
-   ```
-
-3. **Using Makefile**:
-   ```bash
-   make all
-   ```
-
-## Usage
-
-```bash
-./microex <input_file.microex>
+#### Operators
+```
+:=    // Assignment
++     // Addition
+-     // Subtraction/Unary minus
+*     // Multiplication
+/     // Division
+>=    // Greater than or equal
+<=    // Less than or equal
+>     // Greater than
+<     // Less than
+==    // Equal to
+!=    // Not equal to
 ```
 
-Example:
-```bash
-./microex test_complete.microex
+#### Special Symbols
+```
+;     // Statement terminator
+,     // List separator
+[     // Array index open
+]     // Array index close
+(     // Expression/parameter open
+)     // Expression/parameter close
 ```
 
-## Language Syntax
+#### Identifiers
+- Begin with a letter (A-Z, a-z)
+- Can contain letters, digits (0-9)
+- Case-sensitive
+- Maximum length: 50 characters
 
-### Program Structure
+#### Literals
+- Integer literals: Sequence of digits (e.g., 123, 42)
+- Float literals: Digits with decimal point (e.g., 3.14, 0.5)
+
+### Grammar (EBNF)
+
+```ebnf
+program         → 'Program' identifier 'Begin' declaration_list statement_list 'End'
+
+declaration_list → (declaration)*
+declaration     → 'declare' identifier_list 'as' type ';'
+identifier_list → identifier (',' identifier)*
+type           → 'integer' | 'float'
+array_decl     → identifier '[' INTEGER_LITERAL ']'
+
+statement_list → (statement)*
+statement      → assignment_stmt
+               | for_stmt
+               | if_stmt
+               | print_stmt
+
+assignment_stmt → (identifier | array_access) ':=' expression ';'
+array_access   → identifier '[' expression ']'
+
+for_stmt       → 'FOR' '(' identifier ':=' expression direction expression ')'
+                 statement_list
+                 'ENDFOR'
+direction      → 'TO' | 'DOWNTO'
+
+if_stmt        → 'IF' '(' condition ')' 'THEN'
+                 statement_list
+                 ('ELSE' statement_list)?
+                 'ENDIF'
+
+print_stmt     → 'print' '(' expression (',' expression)* ')' ';'
+
+expression     → term (('+' | '-') term)*
+term           → factor (('*' | '/') factor)*
+factor         → INTEGER_LITERAL
+               | FLOAT_LITERAL
+               | identifier
+               | array_access
+               | '(' expression ')'
+               | '-' factor
+
+condition      → expression ('==' | '!=' | '>' | '>=' | '<' | '<=') expression
 ```
-Program <program_name>
-Begin
-    <declarations>
-    <statements>
-End
+
+## Compiler Architecture
+
+### Phase 1: Lexical Analysis (microex.l)
+
+1. **Token Recognition**
+   - Keywords and operators
+   - Identifiers and literals
+   - Error detection for invalid characters
+
+2. **Symbol Management**
+   - Maintenance of symbol table
+   - String literal pool
+   - Line number tracking
+
+### Phase 2: Syntax Analysis (microex.y)
+
+1. **Grammar Implementation**
+   - LALR(1) parsing
+   - Precedence rules for operators
+   - Error recovery strategies
+
+2. **Semantic Actions**
+   - Type checking
+   - Scope management
+   - Code generation triggers
+
+### Phase 3: Code Generation
+
+1. **Three-Address Code**
+   - Instruction selection
+   - Register allocation
+   - Label management
+
+2. **Optimization**
+   - Constant folding
+   - Dead code elimination
+   - Common subexpression elimination
+
+## Three-Address Code Reference
+
+### Data Movement Instructions
+
 ```
-
-### Variable Declarations
-```
-declare <var_list> as <type>;
-declare <array_name>[<size>] as <type>;
-```
-
-Types: `integer`, `float`
-
-### Assignment Statements
-```
-<variable> := <expression>;
-<array>[<index>] := <expression>;
-```
-
-### FOR Loops
-```
-FOR (<var> := <start> TO <end>)
-    <statements>
-ENDFOR
-
-FOR (<var> := <start> DOWNTO <end>)
-    <statements>
-ENDFOR
-```
-
-### IF Statements
-```
-IF (<condition>) THEN
-    <statements>
-ENDIF
-
-IF (<condition>) THEN
-    <statements>
-ELSE
-    <statements>
-ENDIF
-```
-
-### Expressions
-- Arithmetic: `+`, `-`, `*`, `/`
-- Comparison: `>=`, `<=`, `>`, `<`, `==`, `!=`
-- Parentheses for grouping
-- Array access: `array[index]`
-- Unary minus: `-expression`
-
-## Three-Address Code Output
-
-The compiler generates three-address code with the following instruction types:
-
-### Variable Declaration Instructions
-```
-Declare <var>, Integer
-Declare <var>, Float
-Declare <array>, Integer_array,<size>
-Declare <array>, Float_array,<size>
+I_STORE src,dest       // Integer assignment
+F_STORE src,dest       // Float assignment
+I_LOAD  src,dest       // Integer load
+F_LOAD  src,dest       // Float load
 ```
 
 ### Arithmetic Instructions
-```
-I_ADD <arg1>,<arg2>,<result>    # Integer addition
-I_SUB <arg1>,<arg2>,<result>    # Integer subtraction
-I_MUL <arg1>,<arg2>,<result>    # Integer multiplication
-I_DIV <arg1>,<arg2>,<result>    # Integer division
-I_UMINUS <arg>,<result>         # Integer unary minus
 
-F_ADD <arg1>,<arg2>,<result>    # Float addition
-F_SUB <arg1>,<arg2>,<result>    # Float subtraction
-F_MUL <arg1>,<arg2>,<result>    # Float multiplication
-F_DIV <arg1>,<arg2>,<result>    # Float division
-F_UMINUS <arg>,<result>         # Float unary minus
 ```
+I_ADD   op1,op2,dest   // Integer addition
+I_SUB   op1,op2,dest   // Integer subtraction
+I_MUL   op1,op2,dest   // Integer multiplication
+I_DIV   op1,op2,dest   // Integer division
+I_UMINUS op,dest       // Integer unary minus
 
-### Assignment Instructions
-```
-I_STORE <value>,<var>           # Integer assignment
-F_STORE <value>,<var>           # Float assignment
+F_ADD   op1,op2,dest   // Float addition
+F_SUB   op1,op2,dest   // Float subtraction
+F_MUL   op1,op2,dest   // Float multiplication
+F_DIV   op1,op2,dest   // Float division
+F_UMINUS op,dest       // Float unary minus
 ```
 
 ### Control Flow Instructions
-```
-I_CMP <arg1>,<arg2>             # Integer comparison
-F_CMP <arg1>,<arg2>             # Float comparison
-J <label>                       # Unconditional jump
-JE <label>                      # Jump if equal
-JG <label>                      # Jump if greater
-JGE <label>                     # Jump if greater or equal
-JL <label>                      # Jump if less
-JLE <label>                     # Jump if less or equal
-JNE <label>                     # Jump if not equal
-```
 
-### Loop Control Instructions
 ```
-INC <var>                       # Increment variable
-DEC <var>                       # Decrement variable
+J       label          // Unconditional jump
+JE      label          // Jump if equal
+JNE     label          // Jump if not equal
+JG      label          // Jump if greater
+JGE     label          // Jump if greater/equal
+JL      label          // Jump if less
+JLE     label          // Jump if less/equal
+
+I_CMP   op1,op2        // Integer comparison
+F_CMP   op1,op2        // Float comparison
 ```
 
-### Subroutine Instructions
-```
-CALL <name>,<arg1>,<arg2>,...   # Subroutine call
-```
+### Program Structure Instructions
 
-## Example Output
-
-For the input program:
 ```
-Program testP
-Begin
-    declare I as integer;
-    declare A,B,C,D, LLL[100] as float;
-    
-    FOR (I := 1 TO 100)
-        A := -LLL[I] + B * D - C;
-    ENDFOR
-    
-    IF (A >= 10000.0) THEN
-        print(1);
-    ELSE
-        print(2, 1.4);
-    ENDIF
-End
+START   name           // Program start
+HALT    name           // Program end
+Declare name,type      // Variable declaration
+CALL    name,args...   // Procedure call
 ```
 
-The compiler generates:
-```
-START testP
+## Symbol Table Management
 
-Declare I, Integer
-
-Declare A, Float
-
-Declare B, Float
-
-Declare C, Float
-
-Declare D, Float
-
-Declare LLL, Float_array,100
-
-I_STORE 1,I
-lb&1: 
-F_UMINUS LLL[I],T&1
-F_MUL B,D,T&2
-F_ADD T&1,T&2,T&3
-F_SUB T&3,C,T&4
-F_STORE T&4,A
-
-INC I
-I_CMP I,100
-JLE lb&1
-
-F_CMP A,10000.0
-JL lb&2
-
-CALL print, 1
-
-J lb&3
-lb&2: 
-CALL print,2,1.4
-lb&3: 
-HALT testP
-
-Declare T&1, Float
-
-Declare T&2, Float
-
-Declare T&3, Float
-
-Declare T&4, Float
+### Symbol Table Entry Structure
+```c
+typedef struct {
+    char name[50];          // Symbol name
+    char type[20];          // Data type
+    int array_size;         // Array size (0 for scalar)
+    int declared;           // Declaration flag
+} symbol_t;
 ```
 
-## Testing
+### Operations
+1. **Symbol Insertion**
+   - Check for duplicates
+   - Type validation
+   - Array bounds verification
 
-The project includes comprehensive test files for each grading level:
+2. **Symbol Lookup**
+   - Type checking
+   - Array bounds checking
+   - Undeclared variable detection
 
-1. **test_declarations.microex** - Variable declarations only
-2. **test_assignments.microex** - Declarations + assignments  
-3. **test_for_loops.microex** - Declarations + assignments + FOR loops
-4. **test_complete.microex** - Complete implementation with IF-THEN-ELSE
-5. **test_pdf_example.microex** - Original example from the specification
+3. **Scope Management**
+   - Single scope (global)
+   - Name collision prevention
+   - Declaration tracking
 
-## Implementation Details
+## Error Handling
 
-### Symbol Table Management
-- Hash-based symbol table for efficient lookup
-- Type checking for variable declarations and usage
-- Array size tracking for bounds checking
-- Scope management for nested constructs
+### Lexical Errors
+- Invalid characters
+- Malformed numbers
+- Identifier length exceeded
+- Unterminated strings
 
-### Code Generation Strategy
-- Single-pass compilation with immediate code generation
-- Temporary variable allocation for intermediate results
-- Label generation for control flow constructs
-- Three-address code optimization
+### Syntax Errors
+- Missing semicolons
+- Mismatched parentheses
+- Invalid statement structure
+- Incorrect array declarations
 
-### Error Handling
-- Lexical error detection for invalid characters
-- Syntax error reporting with line information
-- Semantic error checking for undeclared variables
-- Type mismatch detection
+### Semantic Errors
+- Type mismatches
+- Undeclared variables
+- Array bounds violations
+- Invalid operations
 
-## Grading Compliance
+### Error Recovery
+1. **Panic Mode**
+   - Skip to next semicolon
+   - Resynchronize at statement boundary
 
-This implementation meets all requirements for the 90-point grading level:
+2. **Error Messages**
+   - Line number
+   - Error context
+   - Suggested fix
 
-- ✅ Variable declarations (70 points)
-- ✅ Assignment statements (80 points)  
-- ✅ FOR loop constructs (85 points)
-- ✅ IF-THEN-ELSE statements (90 points)
+## Optimization
 
-## Future Enhancements
+### Implemented Optimizations
+1. **Constant Folding**
+   ```
+   x := 2 + 3  →  x := 5
+   ```
 
-Potential extensions for bonus points:
+2. **Common Subexpression Elimination**
+   ```
+   t1 := a + b
+   t2 := a + b  →  t2 := t1
+   ```
 
-1. **Complex FOR constructs** with expressions in bounds and STEP clauses
-2. **WHILE loops** with conditional termination
-3. **Nested control structures** with proper scope management
-4. **Complex Boolean expressions** with logical operators (&&, ||, !)
-5. **User-defined functions** with parameter passing and return values
-6. **Advanced type checking** with implicit type conversions
+3. **Dead Code Elimination**
+   ```
+   if (0) then   →   (removed)
+      x := 1
+   endif
+   ```
 
-## Author Notes
+### Future Optimizations
+1. Strength Reduction
+2. Loop Invariant Code Motion
+3. Register Allocation
+4. Peephole Optimization
 
-This compiler implementation demonstrates a complete understanding of:
-- Lexical analysis with regular expressions
-- Syntax analysis with context-free grammars
-- Semantic analysis with symbol tables
-- Intermediate code generation for three-address machines
-- Error handling and recovery mechanisms
+## Development Guide
 
-The code is well-structured, documented, and follows best practices for compiler construction using Lex and Yacc tools.
+### Adding New Features
+
+1. **New Operators**
+   - Add token in microex.l
+   - Update grammar in microex.y
+   - Implement semantic actions
+   - Add code generation rules
+
+2. **New Control Structures**
+   - Define syntax in grammar
+   - Implement label management
+   - Add code generation patterns
+   - Update error handling
+
+3. **New Data Types**
+   - Extend symbol table
+   - Add type checking rules
+   - Implement conversion rules
+   - Update code generation
+
+### Testing
+
+1. **Unit Tests**
+   - Lexical analysis
+   - Parsing
+   - Code generation
+   - Error handling
+
+2. **Integration Tests**
+   - Complete programs
+   - Error cases
+   - Optimization verification
+
+3. **Test Files**
+   - test_declarations.microex
+   - test_assignments.microex
+   - test_for_loops.microex
+   - test_complete.microex
+
+### Best Practices
+
+1. **Code Organization**
+   - Modular design
+   - Clear commenting
+   - Consistent naming
+   - Error checking
+
+2. **Memory Management**
+   - Symbol table cleanup
+   - Temporary storage
+   - String handling
+   - Error recovery
+
+3. **Documentation**
+   - Inline comments
+   - API documentation
+   - Error messages
+   - Usage examples

@@ -1,11 +1,30 @@
 Program TestAssignments
 Begin
-    declare I as integer;
-    declare A,B,C,D as float;
-    declare LLL[100] as float;
+    // Variable declarations
+    declare i, j, k as integer;
+    declare a, b, c, result as float;
+    declare array[100] as float;
 
-    I := 5;
-    A := 3.14;
-    B := 2.71;
-    LLL[10] := 1.5;
+    // Simple assignments
+    i := 42;              // Integer assignment
+    j := 100;
+    k := i + j;          // Expression assignment
+
+    // Float assignments
+    a := 3.14159;        // Pi
+    b := 2.71828;        // e
+    c := -1.618;         // Negative number
+
+    // Expression assignments
+    result := (a + b) * c;
+    result := result + 5.0;
+
+    // Array assignments
+    array[0] := 1.0;
+    array[i] := a + b;
+    array[99] := result * 2.0;
+
+    // Multiple operations
+    i := i + 1;
+    result := array[i] + (a * b) / c;
 End
