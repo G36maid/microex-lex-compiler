@@ -62,14 +62,15 @@ microex-lex-compiler/
 - (Optional) clang-format for code formatting
 
 ## Quick Start
+
 ```
-git clone <repository>
+git clone https://github.com/G36maid/microex-lex-compiler.git
 cd microex-lex-compiler
 ```
 
 1. **Build the compiler**
    ```bash
-   make clean && make && make test
+   make clean && make
    ```
 
 2. **Run tests**
