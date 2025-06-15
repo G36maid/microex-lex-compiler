@@ -33,7 +33,8 @@ microex-lex-compiler/
 │
 ├── docs/                  # Documentation
 │   ├── compiler-guide.md # Technical documentation
-│   └── README.md         # Project overview
+│   ├── Report.md         # Project report
+│   └── Report.pdf         # project report documentation
 │
 ├── tests/                 # Test files
 │   ├── test_declarations.microex
@@ -47,6 +48,7 @@ microex-lex-compiler/
 │   ├── y.tab.c
 │   └── y.tab.h
 │
+├── README.md         # Project overview
 └── Makefile              # Build system
 ```
 
